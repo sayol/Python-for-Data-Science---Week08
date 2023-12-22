@@ -1,0 +1,3827 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Pandas-DataFrame}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@ges}{\let\PY@bf=\textbf\let\PY@it=\textit}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \section{Pandas DataFrame}\label{pandas-dataframe}
+
+    \subsection{Import Required Libraries}\label{import-required-libraries}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsection{Create DataFrame}\label{create-dataframe}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} help(pd)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} dir(pd)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} help(pd.DataFrame)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{17}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{p}{]}\PY{p}{,}
+    \PY{n}{columns}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{data}\PY{o}{=}\PY{n+nb}{list}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{abcde}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{variables}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{index}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{y}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{index}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{,}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+variables  a  b  c  d  e
+index
+x          1  2  3  4  5
+y         -2  0  4 -6  3
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{columns}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Index(['a', 'b', 'c', 'd', 'e'], dtype='object')
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} help(pd.Index)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{data}\PY{o}{=}\PY{p}{[}
+        \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Michael}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{35}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lucy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accountant}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Smith}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{32}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Driver}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Andrea}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{22}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Engineer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+        \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{20}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Designer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{]}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+         0       1   2           3
+0  Michael    Male  35    Lecturer
+1     Lucy  Female  25  Accountant
+2    Smith    Male  32      Driver
+3   Andrea  Female  22    Engineer
+4     Jane  Female  20    Designer
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{data}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}
+        \PY{n+nb}{object}\PY{o}{=}\PY{p}{[}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Michael}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{35}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lucy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accountant}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Smith}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{32}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Driver}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Andrea}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{22}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Engineer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{20}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Designer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+        \PY{p}{]}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{columns}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Field}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Job}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{index}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ID}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA06}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA17}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA09}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA03   Michael    Male  35    Lecturer
+DA06      Lucy  Female  25  Accountant
+DA17     Smith    Male  32      Driver
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+    \end{Verbatim}
+
+    \subsection{Access Elements}\label{access-elements}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{22}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{22}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+'Michael'
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{23}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{23}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+'Michael'
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsubsection{Access First Row?}\label{access-first-row}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{24}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{p}{:}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{24}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field
+Name       Michael
+Gender        Male
+Age             35
+Job       Lecturer
+Name: DA03, dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{26}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{type}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{p}{:}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{26}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+pandas.core.series.Series
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{25}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{p}{:}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{25}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name Gender Age       Job
+ID
+DA03   Michael   Male  35  Lecturer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{27}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{type}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{p}{:}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{27}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+pandas.core.frame.DataFrame
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{28}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{28}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA03   Michael    Male  35    Lecturer
+DA06      Lucy  Female  25  Accountant
+DA17     Smith    Male  32      Driver
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsubsection{Slice First and Third
+Row?}\label{slice-first-and-third-row}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{29}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA17}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{p}{:}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{29}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name Gender Age       Job
+ID
+DA03   Michael   Male  35  Lecturer
+DA17     Smith   Male  32    Driver
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsubsection{Access Column ``Age''?}\label{access-column-age}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field Age
+ID
+DA03   35
+DA06   25
+DA17   32
+DA12   22
+DA09   20
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{34}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{34}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name Gender Age       Job
+ID
+DA03   Michael   Male  35  Lecturer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{36}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{36}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field Age
+ID
+DA03   35
+DA06   25
+DA17   32
+DA12   22
+DA09   20
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsection{Modify Elements}\label{modify-elements}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{37}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{data}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}
+        \PY{n+nb}{object}\PY{o}{=}\PY{p}{[}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Michael}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{35}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lucy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accountant}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Smith}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{32}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Driver}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Andrea}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{22}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Engineer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{20}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Designer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+        \PY{p}{]}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{columns}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Field}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Job}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{index}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ID}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA06}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA17}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA09}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA03   Michael    Male  35    Lecturer
+DA06      Lucy  Female  25  Accountant
+DA17     Smith    Male  32      Driver
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{42}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{columns}\PY{o}{.}\PY{n}{name} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Variables}\PY{l+s+s2}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name  Gender Age         Job
+ID
+DA03       Michael    Male  35    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA12        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{46}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{index}\PY{o}{.}\PY{n}{name} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Index}\PY{l+s+s2}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{47}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{47}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name  Gender Age         Job
+Index
+DA03       Michael    Male  35    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA12        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{50}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{mapper}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Sex}\PY{l+s+s2}{\PYZdq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{51}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{51}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job
+Index
+DA03       Michael    Male  35    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA12        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsubsection{Rename ``DA12'' to ``DA02''?}\label{rename-da12-to-da02}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{53}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{mapper}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA02}\PY{l+s+s2}{\PYZdq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{index}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{54}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{54}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job
+Index
+DA03       Michael    Male  35    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA02        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsubsection{Change Age of Michael to
+``36''?}\label{change-age-of-michael-to-36}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{57}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{36}
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{57}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job
+Index
+DA03       Michael    Male  36    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA02        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsection{Add/Remove Row/Column}\label{addremove-rowcolumn}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{58}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA10}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Say}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{37}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{58}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job
+Index
+DA03       Michael    Male  36    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA02        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+DA10           Say    Male  37    Lecturer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{62}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{labels}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA10}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{63}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{63}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job
+Index
+DA03       Michael    Male  36    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA02        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{64}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Score}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{8}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{9}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{65}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{65}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job  Score
+Index
+DA03       Michael    Male  36    Lecturer      6
+DA06          Lucy  Female  25  Accountant      5
+DA17         Smith    Male  32      Driver      8
+DA02        Andrea  Female  22    Engineer      0
+DA09          Jane  Female  20    Designer      9
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsubsection{Drop Column ``Score''?}\label{drop-column-score}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{66}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{labels}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Score}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{columns}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{67}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{67}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job
+Index
+DA03       Michael    Male  36    Lecturer
+DA06          Lucy  Female  25  Accountant
+DA17         Smith    Male  32      Driver
+DA02        Andrea  Female  22    Engineer
+DA09          Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{69}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Score}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{8}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{9}\PY{p}{]}
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{69}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Variables     Name     Sex Age         Job  Score
+Index
+DA03       Michael    Male  36    Lecturer      6
+DA06          Lucy  Female  25  Accountant      5
+DA17         Smith    Male  32      Driver      8
+DA02        Andrea  Female  22    Engineer      0
+DA09          Jane  Female  20    Designer      9
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{74}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} df.drop(labels=4, axis=1, inplace=True) \PYZsh{} Error}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsection{Transformation}\label{transformation}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{119}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{data}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}
+        \PY{n+nb}{object}\PY{o}{=}\PY{p}{[}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Michael}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{35}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lucy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accountant}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Smith}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{32}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Driver}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Andrea}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{22}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Engineer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+            \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{20}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Designer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+        \PY{p}{]}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{columns}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Field}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Job}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{index}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ID}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA06}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA17}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA09}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA03   Michael    Male  35    Lecturer
+DA06      Lucy  Female  25  Accountant
+DA17     Smith    Male  32      Driver
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{79}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{79}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+DA06      Lucy  Female  25  Accountant
+DA03   Michael    Male  35    Lecturer
+DA17     Smith    Male  32      Driver
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{83}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,} \PY{n}{ascending}\PY{o}{=}\PY{p}{[}\PY{k+kc}{False}\PY{p}{,} \PY{k+kc}{True}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{83}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA17     Smith    Male  32      Driver
+DA03   Michael    Male  35    Lecturer
+DA09      Jane  Female  20    Designer
+DA12    Andrea  Female  22    Engineer
+DA06      Lucy  Female  25  Accountant
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{90}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{sort\PYZus{}index}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{ascending}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{90}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA17     Smith    Male  32      Driver
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+DA06      Lucy  Female  25  Accountant
+DA03   Michael    Male  35    Lecturer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{92}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{sort\PYZus{}index}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}index}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{columns}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{92}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field Age  Gender         Job     Name
+ID
+DA03   35    Male    Lecturer  Michael
+DA06   25  Female  Accountant     Lucy
+DA09   20  Female    Designer     Jane
+DA12   22  Female    Engineer   Andrea
+DA17   32    Male      Driver    Smith
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{93}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} help(df.sort\PYZus{}index)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{94}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{shape}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{94}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(5, 4)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{95}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{dtypes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{95}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field
+Name      object
+Gender    object
+Age       object
+Job       object
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{98}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n}{dtype}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{int64}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{99}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{dtypes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{99}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field
+Name      object
+Gender    object
+Age        int64
+Job       object
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{104}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n}{dtype}\PY{o}{=}\PY{n+nb}{object}\PY{p}{)}
+\PY{n}{df}\PY{o}{.}\PY{n}{dtypes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{104}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field
+Name      object
+Gender    object
+Age       object
+Job       object
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{105}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{to\PYZus{}numeric}\PY{p}{(}\PY{n}{arg}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{df}\PY{o}{.}\PY{n}{dtypes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{105}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field
+Name      object
+Gender    object
+Age        int64
+Job       object
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{107}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Categorical}\PY{p}{(}\PY{n}{values}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{df}\PY{o}{.}\PY{n}{dtypes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{107}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field
+Name        object
+Gender    category
+Age          int64
+Job         object
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{112}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{select\PYZus{}dtypes}\PY{p}{(}\PY{n}{include}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{object}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{columns}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{112}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Index(['Name', 'Job'], dtype='object', name='Field')
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{113}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{col} \PY{o+ow}{in} \PY{n}{df}\PY{o}{.}\PY{n}{select\PYZus{}dtypes}\PY{p}{(}\PY{n}{include}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{object}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{columns}\PY{p}{:}
+    \PY{n}{df}\PY{p}{[}\PY{n}{col}\PY{p}{]}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Categorical}\PY{p}{(}\PY{n}{values}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{n}{col}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{114}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{dtypes}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{114}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field
+Name      category
+Gender    category
+Age          int64
+Job       category
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{116}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{select\PYZus{}dtypes}\PY{p}{(}\PY{n}{include}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{number}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{category}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{116}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender  Age         Job
+ID
+DA03   Michael    Male   35    Lecturer
+DA06      Lucy  Female   25  Accountant
+DA17     Smith    Male   32      Driver
+DA12    Andrea  Female   22    Engineer
+DA09      Jane  Female   20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{120}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df\PYZus{}new} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{121}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df\PYZus{}new}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{121}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA03   Michael    Male  35    Lecturer
+DA06      Lucy  Female  25  Accountant
+DA17     Smith    Male  32      Driver
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{122}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{encode\PYZus{}gender}\PY{p}{(}\PY{n}{gender}\PY{p}{:} \PY{n+nb}{str}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{o}{\PYZgt{}}\PY{n+nb}{int}\PY{p}{:}
+    \PY{k}{if} \PY{n}{gender}\PY{o}{==}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}
+        \PY{n}{encode}\PY{o}{=}\PY{l+m+mi}{0}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{encode}\PY{o}{=}\PY{l+m+mi}{1}
+    \PY{k}{return} \PY{n}{encode}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{125}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df\PYZus{}new}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{n}{func}\PY{o}{=}\PY{n}{encode\PYZus{}gender}\PY{p}{)}
+\PY{n}{df\PYZus{}new}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{125}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA03   Michael       1  35    Lecturer
+DA06      Lucy       0  25  Accountant
+DA17     Smith       1  32      Driver
+DA12    Andrea       0  22    Engineer
+DA09      Jane       0  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{128}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{new\PYZus{}gender\PYZus{}features} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{get\PYZus{}dummies}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n}{dtype}\PY{o}{=}\PY{n+nb}{int}\PY{p}{)}
+\PY{n}{new\PYZus{}gender\PYZus{}features}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{128}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+      Female  Male
+ID
+DA03       0     1
+DA06       1     0
+DA17       0     1
+DA12       1     0
+DA09       1     0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{129}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df\PYZus{}new} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{n}{objs}\PY{o}{=}\PY{p}{[}\PY{n}{df\PYZus{}new}\PY{p}{,}\PY{n}{new\PYZus{}gender\PYZus{}features}\PY{p}{]}\PY{p}{,}\PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{df\PYZus{}new}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{129}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+         Name  Gender Age         Job  Female  Male
+ID
+DA03  Michael       1  35    Lecturer       0     1
+DA06     Lucy       0  25  Accountant       1     0
+DA17    Smith       1  32      Driver       0     1
+DA12   Andrea       0  22    Engineer       1     0
+DA09     Jane       0  20    Designer       1     0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{130}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{pd}\PY{o}{.}\PY{n}{get\PYZus{}dummies}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{130}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+      Name\_Andrea  Name\_Jane  Name\_Lucy  Name\_Michael  Name\_Smith  \textbackslash{}
+ID
+DA03        False      False      False          True       False
+DA06        False      False       True         False       False
+DA17        False      False      False         False        True
+DA12         True      False      False         False       False
+DA09        False       True      False         False       False
+
+      Gender\_Female  Gender\_Male  Age\_20  Age\_22  Age\_25  Age\_32  Age\_35  \textbackslash{}
+ID
+DA03          False         True   False   False   False   False    True
+DA06           True        False   False   False    True   False   False
+DA17          False         True   False   False   False    True   False
+DA12           True        False   False    True   False   False   False
+DA09           True        False    True   False   False   False   False
+
+      Job\_Accountant  Job\_Designer  Job\_Driver  Job\_Engineer  Job\_Lecturer
+ID
+DA03           False         False       False         False          True
+DA06            True         False       False         False         False
+DA17           False         False        True         False         False
+DA12           False         False       False          True         False
+DA09           False          True       False         False         False
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{131}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{131}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender Age         Job
+ID
+DA03   Michael    Male  35    Lecturer
+DA06      Lucy  Female  25  Accountant
+DA17     Smith    Male  32      Driver
+DA12    Andrea  Female  22    Engineer
+DA09      Jane  Female  20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{132}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df2} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+\PY{n}{df2}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{=}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{n}{func}\PY{o}{=}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n+nb}{str}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{o}{+}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ years old}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{df2}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{132}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender           Age         Job
+ID
+DA03   Michael    Male  35 years old    Lecturer
+DA06      Lucy  Female  25 years old  Accountant
+DA17     Smith    Male  32 years old      Driver
+DA12    Andrea  Female  22 years old    Engineer
+DA09      Jane  Female  20 years old    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{135}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{s} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{25 years old}\PY{l+s+s2}{\PYZdq{}}
+\PY{n+nb}{int}\PY{p}{(}\PY{n}{s}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{sep}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{135}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+25
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{137}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{extract\PYZus{}age}\PY{p}{(}\PY{n}{s}\PY{p}{:}\PY{n+nb}{str}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{o}{\PYZgt{}}\PY{n+nb}{int}\PY{p}{:}
+    \PY{k}{return} \PY{n+nb}{int}\PY{p}{(}\PY{n}{s}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{sep}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{139}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} df2[\PYZdq{}Age\PYZdq{}]=df2[\PYZdq{}Age\PYZdq{}].apply(func=extract\PYZus{}age)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{136}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df2}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{=}\PY{n}{df2}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{n}{func}\PY{o}{=}\PY{k}{lambda} \PY{n}{s}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n}{s}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{sep}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\PY{n}{df2}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{136}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Field     Name  Gender  Age         Job
+ID
+DA03   Michael    Male   35    Lecturer
+DA06      Lucy  Female   25  Accountant
+DA17     Smith    Male   32      Driver
+DA12    Andrea  Female   22    Engineer
+DA09      Jane  Female   20    Designer
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsection{Aggregation}\label{aggregation}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{140}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{index}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Id}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA06}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA17}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA09}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA15}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA01}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA02}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{data}\PY{o}{=}\PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Michael}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lucy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Smith}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Andrea}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Peter}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{John}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Rebeca}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}\PY{l+m+mi}{31}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,} \PY{l+m+mi}{23}\PY{p}{,} \PY{l+m+mi}{24}\PY{p}{,} \PY{l+m+mi}{26}\PY{p}{,} \PY{l+m+mi}{27}\PY{p}{,} \PY{l+m+mi}{26}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Job}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accountant}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Driver}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Engineer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Designer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Scientist}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Dentist}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Nurse}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Degree}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Master}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Doctoral}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Master}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Email}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da03@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da06@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da17@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da12@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da09@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da15@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+         Name  Gender   Age         Job    Degree            Email
+Id
+DA03  Michael    Male  31.0    Lecturer    Master  da03@domain.com
+DA06     Lucy  Female  25.0  Accountant  Doctoral  da06@domain.com
+DA17    Smith    Male   NaN      Driver  Bachelor  da17@domain.com
+DA12   Andrea  Female  23.0    Engineer       NaN  da12@domain.com
+DA09     Jane  Female  24.0    Designer    Master  da09@domain.com
+DA15    Peter    Male  26.0   Scientist       NaN  da15@domain.com
+DA01     John    Male  27.0     Dentist  Bachelor              NaN
+DA02   Rebeca  Female  26.0       Nurse  Bachelor              NaN
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{143}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} dir(df)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{145}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} help(df.agg)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{147}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{agg}\PY{p}{(}\PY{n}{func}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{count}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{147}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Name      8
+Gender    8
+Age       7
+Job       8
+Degree    6
+Email     6
+dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{149}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{149}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Name      8
+Gender    8
+Age       7
+Job       8
+Degree    6
+Email     6
+dtype: int64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{151}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{numeric\PYZus{}only}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{151}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Age    182.0
+dtype: float64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{154}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{select\PYZus{}dtypes}\PY{p}{(}\PY{n}{include}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{number}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{154}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Age    182.0
+dtype: float64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{152}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{agg}\PY{p}{(}\PY{n}{func}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sum}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{numeric\PYZus{}only}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{152}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Age    182.0
+dtype: float64
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{153}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{help}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{agg}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Help on method aggregate in module pandas.core.frame:
+
+aggregate(func=None, axis: 'Axis' = 0, *args, **kwargs) method of
+pandas.core.frame.DataFrame instance
+    Aggregate using one or more operations over the specified axis.
+
+    Parameters
+    ----------
+    func : function, str, list or dict
+        Function to use for aggregating the data. If a function, must either
+        work when passed a DataFrame or when passed to DataFrame.apply.
+
+        Accepted combinations are:
+
+        - function
+        - string function name
+        - list of functions and/or function names, e.g. ``[np.sum, 'mean']``
+        - dict of axis labels -> functions, function names or list of such.
+    axis : \{0 or 'index', 1 or 'columns'\}, default 0
+            If 0 or 'index': apply function to each column.
+            If 1 or 'columns': apply function to each row.
+    *args
+        Positional arguments to pass to `func`.
+    **kwargs
+        Keyword arguments to pass to `func`.
+
+    Returns
+    -------
+    scalar, Series or DataFrame
+
+        The return can be:
+
+        * scalar : when Series.agg is called with single function
+        * Series : when DataFrame.agg is called with a single function
+        * DataFrame : when DataFrame.agg is called with several functions
+
+        Return scalar, Series or DataFrame.
+
+    The aggregation operations are always performed over an axis, either the
+    index (default) or the column axis. This behavior is different from
+    `numpy` aggregation functions (`mean`, `median`, `prod`, `sum`, `std`,
+    `var`), where the default is to compute the aggregation of the flattened
+    array, e.g., ``numpy.mean(arr\_2d)`` as opposed to
+    ``numpy.mean(arr\_2d, axis=0)``.
+
+    `agg` is an alias for `aggregate`. Use the alias.
+
+    See Also
+    --------
+    DataFrame.apply : Perform any type of operations.
+    DataFrame.transform : Perform transformation type operations.
+    core.groupby.GroupBy : Perform operations over groups.
+    core.resample.Resampler : Perform operations over resampled bins.
+    core.window.Rolling : Perform operations over rolling window.
+    core.window.Expanding : Perform operations over expanding window.
+    core.window.ExponentialMovingWindow : Perform operation over exponential
+weighted
+        window.
+
+    Notes
+    -----
+    `agg` is an alias for `aggregate`. Use the alias.
+
+    Functions that mutate the passed object can produce unexpected
+    behavior or errors and are not supported. See :ref:`gotchas.udf-mutation`
+    for more details.
+
+    A passed user-defined-function will be passed a Series for evaluation.
+
+    Examples
+    --------
+    >>> df = pd.DataFrame([[1, 2, 3],
+    {\ldots}                    [4, 5, 6],
+    {\ldots}                    [7, 8, 9],
+    {\ldots}                    [np.nan, np.nan, np.nan]],
+    {\ldots}                   columns=['A', 'B', 'C'])
+
+    Aggregate these functions over the rows.
+
+    >>> df.agg(['sum', 'min'])
+            A     B     C
+    sum  12.0  15.0  18.0
+    min   1.0   2.0   3.0
+
+    Different aggregations per column.
+
+    >>> df.agg(\{'A' : ['sum', 'min'], 'B' : ['min', 'max']\})
+            A    B
+    sum  12.0  NaN
+    min   1.0  2.0
+    max   NaN  8.0
+
+    Aggregate different functions over the columns and rename the index of the
+resulting
+    DataFrame.
+
+    >>> df.agg(x=('A', max), y=('B', 'min'), z=('C', np.mean))
+         A    B    C
+    x  7.0  NaN  NaN
+    y  NaN  2.0  NaN
+    z  NaN  NaN  6.0
+
+    Aggregate over the columns.
+
+    >>> df.agg("mean", axis="columns")
+    0    2.0
+    1    5.0
+    2    8.0
+    3    NaN
+    dtype: float64
+
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{157}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} help(df.mean)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{161}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{p}{[}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{agg}\PY{p}{(}\PY{n}{func}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{count}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sum}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{161}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+         Age
+count    7.0
+sum    182.0
+mean    26.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsection{Groupby Method}\label{groupby-method}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{162}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{index}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Id}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA06}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA17}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA09}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA15}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA01}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA02}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{data}\PY{o}{=}\PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Michael}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lucy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Smith}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Andrea}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Peter}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{John}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Rebeca}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}\PY{l+m+mi}{31}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,} \PY{l+m+mi}{23}\PY{p}{,} \PY{l+m+mi}{24}\PY{p}{,} \PY{l+m+mi}{26}\PY{p}{,} \PY{l+m+mi}{27}\PY{p}{,} \PY{l+m+mi}{26}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Job}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accountant}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Driver}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Engineer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Designer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Scientist}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Dentist}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Nurse}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Degree}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Master}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Doctoral}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Master}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Email}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da03@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da06@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da17@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da12@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da09@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da15@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+         Name  Gender   Age         Job    Degree            Email
+Id
+DA03  Michael    Male  31.0    Lecturer    Master  da03@domain.com
+DA06     Lucy  Female  25.0  Accountant  Doctoral  da06@domain.com
+DA17    Smith    Male   NaN      Driver  Bachelor  da17@domain.com
+DA12   Andrea  Female  23.0    Engineer       NaN  da12@domain.com
+DA09     Jane  Female  24.0    Designer    Master  da09@domain.com
+DA15    Peter    Male  26.0   Scientist       NaN  da15@domain.com
+DA01     John    Male  27.0     Dentist  Bachelor              NaN
+DA02   Rebeca  Female  26.0       Nurse  Bachelor              NaN
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{164}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gender\PYZus{}gp} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{165}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{dir}\PY{p}{(}\PY{n}{gender\PYZus{}gp}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{165}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+['Age',
+ 'Degree',
+ 'Email',
+ 'Gender',
+ 'Job',
+ 'Name',
+ '\_DataFrameGroupBy\_\_examples\_dataframe\_doc',
+ '\_\_annotations\_\_',
+ '\_\_class\_\_',
+ '\_\_class\_getitem\_\_',
+ '\_\_delattr\_\_',
+ '\_\_dict\_\_',
+ '\_\_dir\_\_',
+ '\_\_doc\_\_',
+ '\_\_eq\_\_',
+ '\_\_format\_\_',
+ '\_\_ge\_\_',
+ '\_\_getattr\_\_',
+ '\_\_getattribute\_\_',
+ '\_\_getitem\_\_',
+ '\_\_getstate\_\_',
+ '\_\_gt\_\_',
+ '\_\_hash\_\_',
+ '\_\_init\_\_',
+ '\_\_init\_subclass\_\_',
+ '\_\_iter\_\_',
+ '\_\_le\_\_',
+ '\_\_len\_\_',
+ '\_\_lt\_\_',
+ '\_\_module\_\_',
+ '\_\_ne\_\_',
+ '\_\_new\_\_',
+ '\_\_orig\_bases\_\_',
+ '\_\_parameters\_\_',
+ '\_\_reduce\_\_',
+ '\_\_reduce\_ex\_\_',
+ '\_\_repr\_\_',
+ '\_\_setattr\_\_',
+ '\_\_sizeof\_\_',
+ '\_\_slots\_\_',
+ '\_\_str\_\_',
+ '\_\_subclasshook\_\_',
+ '\_\_weakref\_\_',
+ '\_accessors',
+ '\_agg\_examples\_doc',
+ '\_agg\_general',
+ '\_agg\_py\_fallback',
+ '\_aggregate\_frame',
+ '\_aggregate\_with\_numba',
+ '\_apply\_filter',
+ '\_apply\_to\_column\_groupbys',
+ '\_ascending\_count',
+ '\_bool\_agg',
+ '\_choose\_path',
+ '\_concat\_objects',
+ '\_constructor',
+ '\_cumcount\_array',
+ '\_cython\_agg\_general',
+ '\_cython\_transform',
+ '\_define\_paths',
+ '\_descending\_count',
+ '\_dir\_additions',
+ '\_dir\_deletions',
+ '\_fill',
+ '\_get\_cythonized\_result',
+ '\_get\_data\_to\_aggregate',
+ '\_get\_index',
+ '\_get\_indices',
+ '\_gotitem',
+ '\_hidden\_attrs',
+ '\_indexed\_output\_to\_ndframe',
+ '\_insert\_inaxis\_grouper',
+ '\_internal\_names',
+ '\_internal\_names\_set',
+ '\_is\_protocol',
+ '\_iterate\_column\_groupbys',
+ '\_iterate\_slices',
+ '\_make\_mask\_from\_int',
+ '\_make\_mask\_from\_list',
+ '\_make\_mask\_from\_positional\_indexer',
+ '\_make\_mask\_from\_slice',
+ '\_make\_mask\_from\_tuple',
+ '\_mask\_selected\_obj',
+ '\_maybe\_transpose\_result',
+ '\_nth',
+ '\_numba\_agg\_general',
+ '\_numba\_prep',
+ '\_obj\_1d\_constructor',
+ '\_obj\_with\_exclusions',
+ '\_op\_via\_apply',
+ '\_positional\_selector',
+ '\_python\_agg\_general',
+ '\_python\_apply\_general',
+ '\_reindex\_output',
+ '\_reset\_cache',
+ '\_selected\_obj',
+ '\_selection',
+ '\_selection\_list',
+ '\_set\_result\_index\_ordered',
+ '\_transform',
+ '\_transform\_general',
+ '\_transform\_with\_numba',
+ '\_value\_counts',
+ '\_wrap\_agged\_manager',
+ '\_wrap\_aggregated\_output',
+ '\_wrap\_applied\_output',
+ '\_wrap\_applied\_output\_series',
+ '\_wrap\_transform\_fast\_result',
+ 'agg',
+ 'aggregate',
+ 'all',
+ 'any',
+ 'apply',
+ 'bfill',
+ 'boxplot',
+ 'corr',
+ 'corrwith',
+ 'count',
+ 'cov',
+ 'cumcount',
+ 'cummax',
+ 'cummin',
+ 'cumprod',
+ 'cumsum',
+ 'describe',
+ 'diff',
+ 'dtypes',
+ 'ewm',
+ 'expanding',
+ 'ffill',
+ 'fillna',
+ 'filter',
+ 'first',
+ 'get\_group',
+ 'groups',
+ 'head',
+ 'hist',
+ 'idxmax',
+ 'idxmin',
+ 'indices',
+ 'last',
+ 'max',
+ 'mean',
+ 'median',
+ 'min',
+ 'ndim',
+ 'ngroup',
+ 'ngroups',
+ 'nth',
+ 'nunique',
+ 'ohlc',
+ 'pct\_change',
+ 'pipe',
+ 'plot',
+ 'prod',
+ 'quantile',
+ 'rank',
+ 'resample',
+ 'rolling',
+ 'sample',
+ 'sem',
+ 'shift',
+ 'size',
+ 'skew',
+ 'std',
+ 'sum',
+ 'tail',
+ 'take',
+ 'transform',
+ 'value\_counts',
+ 'var']
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{166}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gender\PYZus{}gp}\PY{o}{.}\PY{n}{get\PYZus{}group}\PY{p}{(}\PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{166}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+         Name Gender   Age        Job    Degree            Email
+Id
+DA03  Michael   Male  31.0   Lecturer    Master  da03@domain.com
+DA17    Smith   Male   NaN     Driver  Bachelor  da17@domain.com
+DA15    Peter   Male  26.0  Scientist       NaN  da15@domain.com
+DA01     John   Male  27.0    Dentist  Bachelor              NaN
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{169}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gender\PYZus{}gp}\PY{o}{.}\PY{n}{get\PYZus{}group}\PY{p}{(}\PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{169}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+        Name  Gender   Age         Job    Degree            Email
+Id
+DA06    Lucy  Female  25.0  Accountant  Doctoral  da06@domain.com
+DA12  Andrea  Female  23.0    Engineer       NaN  da12@domain.com
+DA09    Jane  Female  24.0    Designer    Master  da09@domain.com
+DA02  Rebeca  Female  26.0       Nurse  Bachelor              NaN
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{168}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gender\PYZus{}gp}\PY{o}{.}\PY{n}{agg}\PY{p}{(}\PY{n}{func}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{numeric\PYZus{}only}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{168}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+         Age
+Gender
+Female  24.5
+Male    28.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{170}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gender\PYZus{}gp}\PY{o}{.}\PY{n}{groups}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{170}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\{'Female': ['DA06', 'DA12', 'DA09', 'DA02'], 'Male': ['DA03', 'DA17', 'DA15',
+'DA01']\}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{171}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DA06}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DA12}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DA09}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{DA02}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{171}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+        Name  Gender   Age         Job    Degree            Email
+Id
+DA06    Lucy  Female  25.0  Accountant  Doctoral  da06@domain.com
+DA12  Andrea  Female  23.0    Engineer       NaN  da12@domain.com
+DA09    Jane  Female  24.0    Designer    Master  da09@domain.com
+DA02  Rebeca  Female  26.0       Nurse  Bachelor              NaN
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{172}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{gender\PYZus{}gp}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{numeric\PYZus{}only}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{172}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+         Age
+Gender
+Female  24.5
+Male    28.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \subsection{PivotTable}\label{pivottable}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{173}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}
+    \PY{n}{index}\PY{o}{=}\PY{n}{pd}\PY{o}{.}\PY{n}{Index}\PY{p}{(}
+        \PY{n}{name}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Id}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{n}{data}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA03}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA06}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA17}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA09}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA15}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA01}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{DA02}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{,}
+    \PY{p}{)}\PY{p}{,}
+    \PY{n}{data}\PY{o}{=}\PY{p}{\PYZob{}}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Name}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Michael}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lucy}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Smith}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Andrea}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Jane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Peter}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{John}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Rebeca}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Female}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}\PY{l+m+mi}{31}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,} \PY{l+m+mi}{23}\PY{p}{,} \PY{l+m+mi}{24}\PY{p}{,} \PY{l+m+mi}{26}\PY{p}{,} \PY{l+m+mi}{27}\PY{p}{,} \PY{l+m+mi}{26}\PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Job}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Lecturer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Accountant}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Driver}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Engineer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Designer}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Scientist}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Dentist}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Nurse}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Degree}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Master}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Doctoral}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Master}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+        \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Email}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{p}{[}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da03@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da06@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da17@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da12@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da09@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{da15@domain.com}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+            \PY{n}{np}\PY{o}{.}\PY{n}{nan}\PY{p}{,}
+        \PY{p}{]}\PY{p}{,}
+    \PY{p}{\PYZcb{}}\PY{p}{,}
+\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+         Name  Gender   Age         Job    Degree            Email
+Id
+DA03  Michael    Male  31.0    Lecturer    Master  da03@domain.com
+DA06     Lucy  Female  25.0  Accountant  Doctoral  da06@domain.com
+DA17    Smith    Male   NaN      Driver  Bachelor  da17@domain.com
+DA12   Andrea  Female  23.0    Engineer       NaN  da12@domain.com
+DA09     Jane  Female  24.0    Designer    Master  da09@domain.com
+DA15    Peter    Male  26.0   Scientist       NaN  da15@domain.com
+DA01     John    Male  27.0     Dentist  Bachelor              NaN
+DA02   Rebeca  Female  26.0       Nurse  Bachelor              NaN
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{174}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{pivot\PYZus{}table}\PY{p}{(}
+    \PY{n}{index}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+    \PY{n}{columns}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Degree}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+    \PY{n}{values}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Age}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+    \PY{n}{aggfunc}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mean}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{174}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Degree  Bachelor  Doctoral  Master
+Gender
+Female      26.0      25.0    24.0
+Male        27.0       NaN    31.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{177}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Degree}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{177}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+                 Name  Age  Job  Email
+Gender Degree
+Female Bachelor     1    1    1      0
+       Doctoral     1    1    1      1
+       Master       1    1    1      1
+Male   Bachelor     2    1    2      1
+       Master       1    1    1      1
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{178}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Degree}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{get\PYZus{}group}\PY{p}{(}\PY{n}{name}\PY{o}{=}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Male}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Bachelor}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{178}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+       Name Gender   Age      Job    Degree            Email
+Id
+DA17  Smith   Male   NaN   Driver  Bachelor  da17@domain.com
+DA01   John   Male  27.0  Dentist  Bachelor              NaN
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{175}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Gender}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Degree}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{numeric\PYZus{}only}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{175}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+                  Age
+Gender Degree
+Female Bachelor  26.0
+       Doctoral  25.0
+       Master    24.0
+Male   Bachelor  27.0
+       Master    31.0
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{179}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{180}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{p} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{load\PYZus{}dataset}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{penguins}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{p}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{180}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+    species     island  bill\_length\_mm  bill\_depth\_mm  flipper\_length\_mm  \textbackslash{}
+0    Adelie  Torgersen            39.1           18.7              181.0
+1    Adelie  Torgersen            39.5           17.4              186.0
+2    Adelie  Torgersen            40.3           18.0              195.0
+3    Adelie  Torgersen             NaN            NaN                NaN
+4    Adelie  Torgersen            36.7           19.3              193.0
+..      {\ldots}        {\ldots}             {\ldots}            {\ldots}                {\ldots}
+339  Gentoo     Biscoe             NaN            NaN                NaN
+340  Gentoo     Biscoe            46.8           14.3              215.0
+341  Gentoo     Biscoe            50.4           15.7              222.0
+342  Gentoo     Biscoe            45.2           14.8              212.0
+343  Gentoo     Biscoe            49.9           16.1              213.0
+
+     body\_mass\_g     sex
+0         3750.0    Male
+1         3800.0  Female
+2         3250.0  Female
+3            NaN     NaN
+4         3450.0  Female
+..           {\ldots}     {\ldots}
+339          NaN     NaN
+340       4850.0  Female
+341       5750.0    Male
+342       5200.0  Female
+343       5400.0    Male
+
+[344 rows x 7 columns]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{181}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{p}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{bill\PYZus{}length\PYZus{}mm}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{box}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{181}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<Axes: >
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{Pandas-DataFrame_files/Pandas-DataFrame_112_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{182}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{p}\PY{o}{.}\PY{n}{select\PYZus{}dtypes}\PY{p}{(}\PY{n}{include}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{number}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{kind}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{box}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{182}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<Axes: >
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{Pandas-DataFrame_files/Pandas-DataFrame_113_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{184}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{p}\PY{o}{.}\PY{n}{select\PYZus{}dtypes}\PY{p}{(}\PY{n}{include}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{number}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}
+    \PY{n}{kind}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{box}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+    \PY{n}{subplots}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,}
+    \PY{n}{layout}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{,}
+\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{184}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+bill\_length\_mm          Axes(0.125,0.53;0.352273x0.35)
+bill\_depth\_mm        Axes(0.547727,0.53;0.352273x0.35)
+flipper\_length\_mm       Axes(0.125,0.11;0.352273x0.35)
+body\_mass\_g          Axes(0.547727,0.11;0.352273x0.35)
+dtype: object
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{Pandas-DataFrame_files/Pandas-DataFrame_114_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{185}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{help}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{o}{.}\PY{n}{plot}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Help on class PlotAccessor in module pandas.plotting.\_core:
+
+class PlotAccessor(pandas.core.base.PandasObject)
+ |  PlotAccessor(data) -> 'None'
+ |
+ |  Make plots of Series or DataFrame.
+ |
+ |  Uses the backend specified by the
+ |  option ``plotting.backend``. By default, matplotlib is used.
+ |
+ |  Parameters
+ |  ----------
+ |  data : Series or DataFrame
+ |      The object for which the method is called.
+ |  x : label or position, default None
+ |      Only used if data is a DataFrame.
+ |  y : label, position or list of label, positions, default None
+ |      Allows plotting of one column versus another. Only used if data is a
+ |      DataFrame.
+ |  kind : str
+ |      The kind of plot to produce:
+ |
+ |      - 'line' : line plot (default)
+ |      - 'bar' : vertical bar plot
+ |      - 'barh' : horizontal bar plot
+ |      - 'hist' : histogram
+ |      - 'box' : boxplot
+ |      - 'kde' : Kernel Density Estimation plot
+ |      - 'density' : same as 'kde'
+ |      - 'area' : area plot
+ |      - 'pie' : pie plot
+ |      - 'scatter' : scatter plot (DataFrame only)
+ |      - 'hexbin' : hexbin plot (DataFrame only)
+ |  ax : matplotlib axes object, default None
+ |      An axes of the current figure.
+ |  subplots : bool or sequence of iterables, default False
+ |      Whether to group columns into subplots:
+ |
+ |      - ``False`` : No subplots will be used
+ |      - ``True`` : Make separate subplots for each column.
+ |      - sequence of iterables of column labels: Create a subplot for each
+ |        group of columns. For example `[('a', 'c'), ('b', 'd')]` will
+ |        create 2 subplots: one with columns 'a' and 'c', and one
+ |        with columns 'b' and 'd'. Remaining columns that aren't specified
+ |        will be plotted in additional subplots (one per column).
+ |
+ |        .. versionadded:: 1.5.0
+ |
+ |  sharex : bool, default True if ax is None else False
+ |      In case ``subplots=True``, share x axis and set some x axis labels
+ |      to invisible; defaults to True if ax is None otherwise False if
+ |      an ax is passed in; Be aware, that passing in both an ax and
+ |      ``sharex=True`` will alter all x axis labels for all axis in a figure.
+ |  sharey : bool, default False
+ |      In case ``subplots=True``, share y axis and set some y axis labels to
+invisible.
+ |  layout : tuple, optional
+ |      (rows, columns) for the layout of subplots.
+ |  figsize : a tuple (width, height) in inches
+ |      Size of a figure object.
+ |  use\_index : bool, default True
+ |      Use index as ticks for x axis.
+ |  title : str or list
+ |      Title to use for the plot. If a string is passed, print the string
+ |      at the top of the figure. If a list is passed and `subplots` is
+ |      True, print each item in the list above the corresponding subplot.
+ |  grid : bool, default None (matlab style default)
+ |      Axis grid lines.
+ |  legend : bool or \{'reverse'\}
+ |      Place legend on axis subplots.
+ |  style : list or dict
+ |      The matplotlib line style per column.
+ |  logx : bool or 'sym', default False
+ |      Use log scaling or symlog scaling on x axis.
+ |
+ |  logy : bool or 'sym' default False
+ |      Use log scaling or symlog scaling on y axis.
+ |
+ |  loglog : bool or 'sym', default False
+ |      Use log scaling or symlog scaling on both x and y axes.
+ |
+ |  xticks : sequence
+ |      Values to use for the xticks.
+ |  yticks : sequence
+ |      Values to use for the yticks.
+ |  xlim : 2-tuple/list
+ |      Set the x limits of the current axes.
+ |  ylim : 2-tuple/list
+ |      Set the y limits of the current axes.
+ |  xlabel : label, optional
+ |      Name to use for the xlabel on x-axis. Default uses index name as xlabel,
+or the
+ |      x-column name for planar plots.
+ |
+ |      .. versionadded:: 1.1.0
+ |
+ |      .. versionchanged:: 1.2.0
+ |
+ |         Now applicable to planar plots (`scatter`, `hexbin`).
+ |
+ |      .. versionchanged:: 2.0.0
+ |
+ |          Now applicable to histograms.
+ |
+ |  ylabel : label, optional
+ |      Name to use for the ylabel on y-axis. Default will show no ylabel, or
+the
+ |      y-column name for planar plots.
+ |
+ |      .. versionadded:: 1.1.0
+ |
+ |      .. versionchanged:: 1.2.0
+ |
+ |         Now applicable to planar plots (`scatter`, `hexbin`).
+ |
+ |      .. versionchanged:: 2.0.0
+ |
+ |          Now applicable to histograms.
+ |
+ |  rot : float, default None
+ |      Rotation for ticks (xticks for vertical, yticks for horizontal
+ |      plots).
+ |  fontsize : float, default None
+ |      Font size for xticks and yticks.
+ |  colormap : str or matplotlib colormap object, default None
+ |      Colormap to select colors from. If string, load colormap with that
+ |      name from matplotlib.
+ |  colorbar : bool, optional
+ |      If True, plot colorbar (only relevant for 'scatter' and 'hexbin'
+ |      plots).
+ |  position : float
+ |      Specify relative alignments for bar plot layout.
+ |      From 0 (left/bottom-end) to 1 (right/top-end). Default is 0.5
+ |      (center).
+ |  table : bool, Series or DataFrame, default False
+ |      If True, draw a table using the data in the DataFrame and the data
+ |      will be transposed to meet matplotlib's default layout.
+ |      If a Series or DataFrame is passed, use passed data to draw a
+ |      table.
+ |  yerr : DataFrame, Series, array-like, dict and str
+ |      See :ref:`Plotting with Error Bars <visualization.errorbars>` for
+ |      detail.
+ |  xerr : DataFrame, Series, array-like, dict and str
+ |      Equivalent to yerr.
+ |  stacked : bool, default False in line and bar plots, and True in area plot
+ |      If True, create stacked plot.
+ |  secondary\_y : bool or sequence, default False
+ |      Whether to plot on the secondary y-axis if a list/tuple, which
+ |      columns to plot on secondary y-axis.
+ |  mark\_right : bool, default True
+ |      When using a secondary\_y axis, automatically mark the column
+ |      labels with "(right)" in the legend.
+ |  include\_bool : bool, default is False
+ |      If True, boolean values can be plotted.
+ |  backend : str, default None
+ |      Backend to use instead of the backend specified in the option
+ |      ``plotting.backend``. For instance, 'matplotlib'. Alternatively, to
+ |      specify the ``plotting.backend`` for the whole session, set
+ |      ``pd.options.plotting.backend``.
+ |  **kwargs
+ |      Options to pass to matplotlib plotting method.
+ |
+ |  Returns
+ |  -------
+ |  :class:`matplotlib.axes.Axes` or numpy.ndarray of them
+ |      If the backend is not the default matplotlib one, the return value
+ |      will be the object returned by the backend.
+ |
+ |  Notes
+ |  -----
+ |  - See matplotlib documentation online for more on this subject
+ |  - If `kind` = 'bar' or 'barh', you can specify relative alignments
+ |    for bar plot layout by `position` keyword.
+ |    From 0 (left/bottom-end) to 1 (right/top-end). Default is 0.5
+ |    (center)
+ |
+ |  Method resolution order:
+ |      PlotAccessor
+ |      pandas.core.base.PandasObject
+ |      pandas.core.accessor.DirNamesMixin
+ |      builtins.object
+ |
+ |  Methods defined here:
+ |
+ |  \_\_call\_\_(self, *args, **kwargs)
+ |      Make plots of Series or DataFrame.
+ |
+ |      Uses the backend specified by the
+ |      option ``plotting.backend``. By default, matplotlib is used.
+ |
+ |      Parameters
+ |      ----------
+ |      data : Series or DataFrame
+ |          The object for which the method is called.
+ |      x : label or position, default None
+ |          Only used if data is a DataFrame.
+ |      y : label, position or list of label, positions, default None
+ |          Allows plotting of one column versus another. Only used if data is a
+ |          DataFrame.
+ |      kind : str
+ |          The kind of plot to produce:
+ |
+ |          - 'line' : line plot (default)
+ |          - 'bar' : vertical bar plot
+ |          - 'barh' : horizontal bar plot
+ |          - 'hist' : histogram
+ |          - 'box' : boxplot
+ |          - 'kde' : Kernel Density Estimation plot
+ |          - 'density' : same as 'kde'
+ |          - 'area' : area plot
+ |          - 'pie' : pie plot
+ |          - 'scatter' : scatter plot (DataFrame only)
+ |          - 'hexbin' : hexbin plot (DataFrame only)
+ |      ax : matplotlib axes object, default None
+ |          An axes of the current figure.
+ |      subplots : bool or sequence of iterables, default False
+ |          Whether to group columns into subplots:
+ |
+ |          - ``False`` : No subplots will be used
+ |          - ``True`` : Make separate subplots for each column.
+ |          - sequence of iterables of column labels: Create a subplot for each
+ |            group of columns. For example `[('a', 'c'), ('b', 'd')]` will
+ |            create 2 subplots: one with columns 'a' and 'c', and one
+ |            with columns 'b' and 'd'. Remaining columns that aren't specified
+ |            will be plotted in additional subplots (one per column).
+ |
+ |            .. versionadded:: 1.5.0
+ |
+ |      sharex : bool, default True if ax is None else False
+ |          In case ``subplots=True``, share x axis and set some x axis labels
+ |          to invisible; defaults to True if ax is None otherwise False if
+ |          an ax is passed in; Be aware, that passing in both an ax and
+ |          ``sharex=True`` will alter all x axis labels for all axis in a
+figure.
+ |      sharey : bool, default False
+ |          In case ``subplots=True``, share y axis and set some y axis labels
+to invisible.
+ |      layout : tuple, optional
+ |          (rows, columns) for the layout of subplots.
+ |      figsize : a tuple (width, height) in inches
+ |          Size of a figure object.
+ |      use\_index : bool, default True
+ |          Use index as ticks for x axis.
+ |      title : str or list
+ |          Title to use for the plot. If a string is passed, print the string
+ |          at the top of the figure. If a list is passed and `subplots` is
+ |          True, print each item in the list above the corresponding subplot.
+ |      grid : bool, default None (matlab style default)
+ |          Axis grid lines.
+ |      legend : bool or \{'reverse'\}
+ |          Place legend on axis subplots.
+ |      style : list or dict
+ |          The matplotlib line style per column.
+ |      logx : bool or 'sym', default False
+ |          Use log scaling or symlog scaling on x axis.
+ |
+ |      logy : bool or 'sym' default False
+ |          Use log scaling or symlog scaling on y axis.
+ |
+ |      loglog : bool or 'sym', default False
+ |          Use log scaling or symlog scaling on both x and y axes.
+ |
+ |      xticks : sequence
+ |          Values to use for the xticks.
+ |      yticks : sequence
+ |          Values to use for the yticks.
+ |      xlim : 2-tuple/list
+ |          Set the x limits of the current axes.
+ |      ylim : 2-tuple/list
+ |          Set the y limits of the current axes.
+ |      xlabel : label, optional
+ |          Name to use for the xlabel on x-axis. Default uses index name as
+xlabel, or the
+ |          x-column name for planar plots.
+ |
+ |          .. versionadded:: 1.1.0
+ |
+ |          .. versionchanged:: 1.2.0
+ |
+ |             Now applicable to planar plots (`scatter`, `hexbin`).
+ |
+ |          .. versionchanged:: 2.0.0
+ |
+ |              Now applicable to histograms.
+ |
+ |      ylabel : label, optional
+ |          Name to use for the ylabel on y-axis. Default will show no ylabel,
+or the
+ |          y-column name for planar plots.
+ |
+ |          .. versionadded:: 1.1.0
+ |
+ |          .. versionchanged:: 1.2.0
+ |
+ |             Now applicable to planar plots (`scatter`, `hexbin`).
+ |
+ |          .. versionchanged:: 2.0.0
+ |
+ |              Now applicable to histograms.
+ |
+ |      rot : float, default None
+ |          Rotation for ticks (xticks for vertical, yticks for horizontal
+ |          plots).
+ |      fontsize : float, default None
+ |          Font size for xticks and yticks.
+ |      colormap : str or matplotlib colormap object, default None
+ |          Colormap to select colors from. If string, load colormap with that
+ |          name from matplotlib.
+ |      colorbar : bool, optional
+ |          If True, plot colorbar (only relevant for 'scatter' and 'hexbin'
+ |          plots).
+ |      position : float
+ |          Specify relative alignments for bar plot layout.
+ |          From 0 (left/bottom-end) to 1 (right/top-end). Default is 0.5
+ |          (center).
+ |      table : bool, Series or DataFrame, default False
+ |          If True, draw a table using the data in the DataFrame and the data
+ |          will be transposed to meet matplotlib's default layout.
+ |          If a Series or DataFrame is passed, use passed data to draw a
+ |          table.
+ |      yerr : DataFrame, Series, array-like, dict and str
+ |          See :ref:`Plotting with Error Bars <visualization.errorbars>` for
+ |          detail.
+ |      xerr : DataFrame, Series, array-like, dict and str
+ |          Equivalent to yerr.
+ |      stacked : bool, default False in line and bar plots, and True in area
+plot
+ |          If True, create stacked plot.
+ |      secondary\_y : bool or sequence, default False
+ |          Whether to plot on the secondary y-axis if a list/tuple, which
+ |          columns to plot on secondary y-axis.
+ |      mark\_right : bool, default True
+ |          When using a secondary\_y axis, automatically mark the column
+ |          labels with "(right)" in the legend.
+ |      include\_bool : bool, default is False
+ |          If True, boolean values can be plotted.
+ |      backend : str, default None
+ |          Backend to use instead of the backend specified in the option
+ |          ``plotting.backend``. For instance, 'matplotlib'. Alternatively, to
+ |          specify the ``plotting.backend`` for the whole session, set
+ |          ``pd.options.plotting.backend``.
+ |      **kwargs
+ |          Options to pass to matplotlib plotting method.
+ |
+ |      Returns
+ |      -------
+ |      :class:`matplotlib.axes.Axes` or numpy.ndarray of them
+ |          If the backend is not the default matplotlib one, the return value
+ |          will be the object returned by the backend.
+ |
+ |      Notes
+ |      -----
+ |      - See matplotlib documentation online for more on this subject
+ |      - If `kind` = 'bar' or 'barh', you can specify relative alignments
+ |        for bar plot layout by `position` keyword.
+ |        From 0 (left/bottom-end) to 1 (right/top-end). Default is 0.5
+ |        (center)
+ |
+ |  \_\_init\_\_(self, data) -> 'None'
+ |      Initialize self.  See help(type(self)) for accurate signature.
+ |
+ |  area(self, x=None, y=None, stacked: 'bool' = True, **kwargs) ->
+'PlotAccessor'
+ |      Draw a stacked area plot.
+ |
+ |      An area plot displays quantitative data visually.
+ |      This function wraps the matplotlib area function.
+ |
+ |      Parameters
+ |      ----------
+ |      x : label or position, optional
+ |          Coordinates for the X axis. By default uses the index.
+ |      y : label or position, optional
+ |          Column to plot. By default uses all columns.
+ |      stacked : bool, default True
+ |          Area plots are stacked by default. Set to False to create a
+ |          unstacked plot.
+ |      **kwargs
+ |          Additional keyword arguments are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      matplotlib.axes.Axes or numpy.ndarray
+ |          Area plot, or array of area plots if subplots is True.
+ |
+ |      See Also
+ |      --------
+ |      DataFrame.plot : Make plots of DataFrame using matplotlib / pylab.
+ |
+ |      Examples
+ |      --------
+ |      Draw an area plot based on basic business metrics:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> df = pd.DataFrame(\{
+ |          {\ldots}     'sales': [3, 2, 3, 9, 10, 6],
+ |          {\ldots}     'signups': [5, 5, 6, 12, 14, 13],
+ |          {\ldots}     'visits': [20, 42, 28, 62, 81, 50],
+ |          {\ldots} \}, index=pd.date\_range(start='2018/01/01', end='2018/07/01',
+ |          {\ldots}                        freq='M'))
+ |          >>> ax = df.plot.area()
+ |
+ |      Area plots are stacked by default. To produce an unstacked plot,
+ |      pass ``stacked=False``:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = df.plot.area(stacked=False)
+ |
+ |      Draw an area plot for a single column:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = df.plot.area(y='sales')
+ |
+ |      Draw with a different `x`:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> df = pd.DataFrame(\{
+ |          {\ldots}     'sales': [3, 2, 3],
+ |          {\ldots}     'visits': [20, 42, 28],
+ |          {\ldots}     'day': [1, 2, 3],
+ |          {\ldots} \})
+ |          >>> ax = df.plot.area(x='day')
+ |
+ |  bar(self, x=None, y=None, **kwargs) -> 'PlotAccessor'
+ |      Vertical bar plot.
+ |
+ |      A bar plot is a plot that presents categorical data with
+ |      rectangular bars with lengths proportional to the values that they
+ |      represent. A bar plot shows comparisons among discrete categories. One
+ |      axis of the plot shows the specific categories being compared, and the
+ |      other axis represents a measured value.
+ |
+ |      Parameters
+ |      ----------
+ |      x : label or position, optional
+ |          Allows plotting of one column versus another. If not specified,
+ |          the index of the DataFrame is used.
+ |      y : label or position, optional
+ |          Allows plotting of one column versus another. If not specified,
+ |          all numerical columns are used.
+ |      color : str, array-like, or dict, optional
+ |          The color for each of the DataFrame's columns. Possible values are:
+ |
+ |          - A single color string referred to by name, RGB or RGBA code,
+ |              for instance 'red' or '\#a98d19'.
+ |
+ |          - A sequence of color strings referred to by name, RGB or RGBA
+ |              code, which will be used for each column recursively. For
+ |              instance ['green','yellow'] each column's bar will be filled in
+ |              green or yellow, alternatively. If there is only a single column
+to
+ |              be plotted, then only the first color from the color list will
+be
+ |              used.
+ |
+ |          - A dict of the form \{column name : color\}, so that each column will
+be
+ |              colored accordingly. For example, if your columns are called `a`
+and
+ |              `b`, then passing \{'a': 'green', 'b': 'red'\} will color bars for
+ |              column `a` in green and bars for column `b` in red.
+ |
+ |          .. versionadded:: 1.1.0
+ |
+ |      **kwargs
+ |          Additional keyword arguments are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      matplotlib.axes.Axes or np.ndarray of them
+ |          An ndarray is returned with one :class:`matplotlib.axes.Axes`
+ |          per column when ``subplots=True``.
+ |
+ |              See Also
+ |              --------
+ |              DataFrame.plot.barh : Horizontal bar plot.
+ |              DataFrame.plot : Make plots of a DataFrame.
+ |              matplotlib.pyplot.bar : Make a bar plot with matplotlib.
+ |
+ |              Examples
+ |              --------
+ |              Basic plot.
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> df = pd.DataFrame(\{'lab':['A', 'B', 'C'], 'val':[10, 30,
+20]\})
+ |                  >>> ax = df.plot.bar(x='lab', y='val', rot=0)
+ |
+ |              Plot a whole dataframe to a bar plot. Each column is assigned a
+ |              distinct color, and each row is nested in a group along the
+ |              horizontal axis.
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> speed = [0.1, 17.5, 40, 48, 52, 69, 88]
+ |                  >>> lifespan = [2, 8, 70, 1.5, 25, 12, 28]
+ |                  >>> index = ['snail', 'pig', 'elephant',
+ |                  {\ldots}          'rabbit', 'giraffe', 'coyote', 'horse']
+ |                  >>> df = pd.DataFrame(\{'speed': speed,
+ |                  {\ldots}                    'lifespan': lifespan\}, index=index)
+ |                  >>> ax = df.plot.bar(rot=0)
+ |
+ |              Plot stacked bar charts for the DataFrame
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> ax = df.plot.bar(stacked=True)
+ |
+ |              Instead of nesting, the figure can be split by column with
+ |              ``subplots=True``. In this case, a :class:`numpy.ndarray` of
+ |              :class:`matplotlib.axes.Axes` are returned.
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> axes = df.plot.bar(rot=0, subplots=True)
+ |                  >>> axes[1].legend(loc=2)  \# doctest: +SKIP
+ |
+ |              If you don't like the default colours, you can specify how you'd
+ |              like each column to be colored.
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> axes = df.plot.bar(
+ |                  {\ldots}     rot=0, subplots=True, color=\{"speed": "red",
+"lifespan": "green"\}
+ |                  {\ldots} )
+ |                  >>> axes[1].legend(loc=2)  \# doctest: +SKIP
+ |
+ |              Plot a single column.
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> ax = df.plot.bar(y='speed', rot=0)
+ |
+ |              Plot only selected categories for the DataFrame.
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> ax = df.plot.bar(x='lifespan', rot=0)
+ |
+ |  barh(self, x=None, y=None, **kwargs) -> 'PlotAccessor'
+ |      Make a horizontal bar plot.
+ |
+ |      A horizontal bar plot is a plot that presents quantitative data with
+ |      rectangular bars with lengths proportional to the values that they
+ |      represent. A bar plot shows comparisons among discrete categories. One
+ |      axis of the plot shows the specific categories being compared, and the
+ |      other axis represents a measured value.
+ |
+ |      Parameters
+ |      ----------
+ |      x : label or position, optional
+ |          Allows plotting of one column versus another. If not specified,
+ |          the index of the DataFrame is used.
+ |      y : label or position, optional
+ |          Allows plotting of one column versus another. If not specified,
+ |          all numerical columns are used.
+ |      color : str, array-like, or dict, optional
+ |          The color for each of the DataFrame's columns. Possible values are:
+ |
+ |          - A single color string referred to by name, RGB or RGBA code,
+ |              for instance 'red' or '\#a98d19'.
+ |
+ |          - A sequence of color strings referred to by name, RGB or RGBA
+ |              code, which will be used for each column recursively. For
+ |              instance ['green','yellow'] each column's bar will be filled in
+ |              green or yellow, alternatively. If there is only a single column
+to
+ |              be plotted, then only the first color from the color list will
+be
+ |              used.
+ |
+ |          - A dict of the form \{column name : color\}, so that each column will
+be
+ |              colored accordingly. For example, if your columns are called `a`
+and
+ |              `b`, then passing \{'a': 'green', 'b': 'red'\} will color bars for
+ |              column `a` in green and bars for column `b` in red.
+ |
+ |          .. versionadded:: 1.1.0
+ |
+ |      **kwargs
+ |          Additional keyword arguments are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      matplotlib.axes.Axes or np.ndarray of them
+ |          An ndarray is returned with one :class:`matplotlib.axes.Axes`
+ |          per column when ``subplots=True``.
+ |
+ |              See Also
+ |              --------
+ |              DataFrame.plot.bar: Vertical bar plot.
+ |              DataFrame.plot : Make plots of DataFrame using matplotlib.
+ |              matplotlib.axes.Axes.bar : Plot a vertical bar plot using
+matplotlib.
+ |
+ |              Examples
+ |              --------
+ |              Basic example
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> df = pd.DataFrame(\{'lab': ['A', 'B', 'C'], 'val': [10,
+30, 20]\})
+ |                  >>> ax = df.plot.barh(x='lab', y='val')
+ |
+ |              Plot a whole DataFrame to a horizontal bar plot
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> speed = [0.1, 17.5, 40, 48, 52, 69, 88]
+ |                  >>> lifespan = [2, 8, 70, 1.5, 25, 12, 28]
+ |                  >>> index = ['snail', 'pig', 'elephant',
+ |                  {\ldots}          'rabbit', 'giraffe', 'coyote', 'horse']
+ |                  >>> df = pd.DataFrame(\{'speed': speed,
+ |                  {\ldots}                    'lifespan': lifespan\}, index=index)
+ |                  >>> ax = df.plot.barh()
+ |
+ |              Plot stacked barh charts for the DataFrame
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> ax = df.plot.barh(stacked=True)
+ |
+ |              We can specify colors for each column
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> ax = df.plot.barh(color=\{"speed": "red", "lifespan":
+"green"\})
+ |
+ |              Plot a column of the DataFrame to a horizontal bar plot
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> speed = [0.1, 17.5, 40, 48, 52, 69, 88]
+ |                  >>> lifespan = [2, 8, 70, 1.5, 25, 12, 28]
+ |                  >>> index = ['snail', 'pig', 'elephant',
+ |                  {\ldots}          'rabbit', 'giraffe', 'coyote', 'horse']
+ |                  >>> df = pd.DataFrame(\{'speed': speed,
+ |                  {\ldots}                    'lifespan': lifespan\}, index=index)
+ |                  >>> ax = df.plot.barh(y='speed')
+ |
+ |              Plot DataFrame versus the desired column
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> speed = [0.1, 17.5, 40, 48, 52, 69, 88]
+ |                  >>> lifespan = [2, 8, 70, 1.5, 25, 12, 28]
+ |                  >>> index = ['snail', 'pig', 'elephant',
+ |                  {\ldots}          'rabbit', 'giraffe', 'coyote', 'horse']
+ |                  >>> df = pd.DataFrame(\{'speed': speed,
+ |                  {\ldots}                    'lifespan': lifespan\}, index=index)
+ |                  >>> ax = df.plot.barh(x='lifespan')
+ |
+ |  box(self, by=None, **kwargs) -> 'PlotAccessor'
+ |      Make a box plot of the DataFrame columns.
+ |
+ |      A box plot is a method for graphically depicting groups of numerical
+ |      data through their quartiles.
+ |      The box extends from the Q1 to Q3 quartile values of the data,
+ |      with a line at the median (Q2). The whiskers extend from the edges
+ |      of box to show the range of the data. The position of the whiskers
+ |      is set by default to 1.5*IQR (IQR = Q3 - Q1) from the edges of the
+ |      box. Outlier points are those past the end of the whiskers.
+ |
+ |      For further details see Wikipedia's
+ |      entry for `boxplot <https://en.wikipedia.org/wiki/Box\_plot>`\_\_.
+ |
+ |      A consideration when using this chart is that the box and the whiskers
+ |      can overlap, which is very common when plotting small sets of data.
+ |
+ |      Parameters
+ |      ----------
+ |      by : str or sequence
+ |          Column in the DataFrame to group by.
+ |
+ |          .. versionchanged:: 1.4.0
+ |
+ |             Previously, `by` is silently ignore and makes no groupings
+ |
+ |      **kwargs
+ |          Additional keywords are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      :class:`matplotlib.axes.Axes` or numpy.ndarray of them
+ |
+ |      See Also
+ |      --------
+ |      DataFrame.boxplot: Another method to draw a box plot.
+ |      Series.plot.box: Draw a box plot from a Series object.
+ |      matplotlib.pyplot.boxplot: Draw a box plot in matplotlib.
+ |
+ |      Examples
+ |      --------
+ |      Draw a box plot from a DataFrame with four columns of randomly
+ |      generated data.
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> data = np.random.randn(25, 4)
+ |          >>> df = pd.DataFrame(data, columns=list('ABCD'))
+ |          >>> ax = df.plot.box()
+ |
+ |      You can also generate groupings if you specify the `by` parameter (which
+ |      can take a column name, or a list or tuple of column names):
+ |
+ |      .. versionchanged:: 1.4.0
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> age\_list = [8, 10, 12, 14, 72, 74, 76, 78, 20, 25, 30, 35, 60,
+85]
+ |          >>> df = pd.DataFrame(\{"gender": list("MMMMMMMMFFFFFF"), "age":
+age\_list\})
+ |          >>> ax = df.plot.box(column="age", by="gender", figsize=(10, 8))
+ |
+ |  density = kde(self, bw\_method=None, ind=None, **kwargs) -> 'PlotAccessor'
+ |
+ |  hexbin(self, x, y, C=None, reduce\_C\_function=None, gridsize=None, **kwargs)
+-> 'PlotAccessor'
+ |      Generate a hexagonal binning plot.
+ |
+ |      Generate a hexagonal binning plot of `x` versus `y`. If `C` is `None`
+ |      (the default), this is a histogram of the number of occurrences
+ |      of the observations at ``(x[i], y[i])``.
+ |
+ |      If `C` is specified, specifies values at given coordinates
+ |      ``(x[i], y[i])``. These values are accumulated for each hexagonal
+ |      bin and then reduced according to `reduce\_C\_function`,
+ |      having as default the NumPy's mean function (:meth:`numpy.mean`).
+ |      (If `C` is specified, it must also be a 1-D sequence
+ |      of the same length as `x` and `y`, or a column label.)
+ |
+ |      Parameters
+ |      ----------
+ |      x : int or str
+ |          The column label or position for x points.
+ |      y : int or str
+ |          The column label or position for y points.
+ |      C : int or str, optional
+ |          The column label or position for the value of `(x, y)` point.
+ |      reduce\_C\_function : callable, default `np.mean`
+ |          Function of one argument that reduces all the values in a bin to
+ |          a single number (e.g. `np.mean`, `np.max`, `np.sum`, `np.std`).
+ |      gridsize : int or tuple of (int, int), default 100
+ |          The number of hexagons in the x-direction.
+ |          The corresponding number of hexagons in the y-direction is
+ |          chosen in a way that the hexagons are approximately regular.
+ |          Alternatively, gridsize can be a tuple with two elements
+ |          specifying the number of hexagons in the x-direction and the
+ |          y-direction.
+ |      **kwargs
+ |          Additional keyword arguments are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      matplotlib.AxesSubplot
+ |          The matplotlib ``Axes`` on which the hexbin is plotted.
+ |
+ |      See Also
+ |      --------
+ |      DataFrame.plot : Make plots of a DataFrame.
+ |      matplotlib.pyplot.hexbin : Hexagonal binning plot using matplotlib,
+ |          the matplotlib function that is used under the hood.
+ |
+ |      Examples
+ |      --------
+ |      The following examples are generated with random data from
+ |      a normal distribution.
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> n = 10000
+ |          >>> df = pd.DataFrame(\{'x': np.random.randn(n),
+ |          {\ldots}                    'y': np.random.randn(n)\})
+ |          >>> ax = df.plot.hexbin(x='x', y='y', gridsize=20)
+ |
+ |      The next example uses `C` and `np.sum` as `reduce\_C\_function`.
+ |      Note that `'observations'` values ranges from 1 to 5 but the result
+ |      plot shows values up to more than 25. This is because of the
+ |      `reduce\_C\_function`.
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> n = 500
+ |          >>> df = pd.DataFrame(\{
+ |          {\ldots}     'coord\_x': np.random.uniform(-3, 3, size=n),
+ |          {\ldots}     'coord\_y': np.random.uniform(30, 50, size=n),
+ |          {\ldots}     'observations': np.random.randint(1,5, size=n)
+ |          {\ldots}     \})
+ |          >>> ax = df.plot.hexbin(x='coord\_x',
+ |          {\ldots}                     y='coord\_y',
+ |          {\ldots}                     C='observations',
+ |          {\ldots}                     reduce\_C\_function=np.sum,
+ |          {\ldots}                     gridsize=10,
+ |          {\ldots}                     cmap="viridis")
+ |
+ |  hist(self, by=None, bins: 'int' = 10, **kwargs) -> 'PlotAccessor'
+ |      Draw one histogram of the DataFrame's columns.
+ |
+ |      A histogram is a representation of the distribution of data.
+ |      This function groups the values of all given Series in the DataFrame
+ |      into bins and draws all bins in one :class:`matplotlib.axes.Axes`.
+ |      This is useful when the DataFrame's Series are in a similar scale.
+ |
+ |      Parameters
+ |      ----------
+ |      by : str or sequence, optional
+ |          Column in the DataFrame to group by.
+ |
+ |          .. versionchanged:: 1.4.0
+ |
+ |             Previously, `by` is silently ignore and makes no groupings
+ |
+ |      bins : int, default 10
+ |          Number of histogram bins to be used.
+ |      **kwargs
+ |          Additional keyword arguments are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      class:`matplotlib.AxesSubplot`
+ |          Return a histogram plot.
+ |
+ |      See Also
+ |      --------
+ |      DataFrame.hist : Draw histograms per DataFrame's Series.
+ |      Series.hist : Draw a histogram with Series' data.
+ |
+ |      Examples
+ |      --------
+ |      When we roll a die 6000 times, we expect to get each value around 1000
+ |      times. But when we roll two dice and sum the result, the distribution
+ |      is going to be quite different. A histogram illustrates those
+ |      distributions.
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> df = pd.DataFrame(
+ |          {\ldots}     np.random.randint(1, 7, 6000),
+ |          {\ldots}     columns = ['one'])
+ |          >>> df['two'] = df['one'] + np.random.randint(1, 7, 6000)
+ |          >>> ax = df.plot.hist(bins=12, alpha=0.5)
+ |
+ |      A grouped histogram can be generated by providing the parameter `by`
+(which
+ |      can be a column name, or a list of column names):
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> age\_list = [8, 10, 12, 14, 72, 74, 76, 78, 20, 25, 30, 35, 60,
+85]
+ |          >>> df = pd.DataFrame(\{"gender": list("MMMMMMMMFFFFFF"), "age":
+age\_list\})
+ |          >>> ax = df.plot.hist(column=["age"], by="gender", figsize=(10, 8))
+ |
+ |  kde(self, bw\_method=None, ind=None, **kwargs) -> 'PlotAccessor'
+ |      Generate Kernel Density Estimate plot using Gaussian kernels.
+ |
+ |      In statistics, `kernel density estimation`\_ (KDE) is a non-parametric
+ |      way to estimate the probability density function (PDF) of a random
+ |      variable. This function uses Gaussian kernels and includes automatic
+ |      bandwidth determination.
+ |
+ |      .. \_kernel density estimation:
+ |          https://en.wikipedia.org/wiki/Kernel\_density\_estimation
+ |
+ |      Parameters
+ |      ----------
+ |      bw\_method : str, scalar or callable, optional
+ |          The method used to calculate the estimator bandwidth. This can be
+ |          'scott', 'silverman', a scalar constant or a callable.
+ |          If None (default), 'scott' is used.
+ |          See :class:`scipy.stats.gaussian\_kde` for more information.
+ |      ind : NumPy array or int, optional
+ |          Evaluation points for the estimated PDF. If None (default),
+ |          1000 equally spaced points are used. If `ind` is a NumPy array, the
+ |          KDE is evaluated at the points passed. If `ind` is an integer,
+ |          `ind` number of equally spaced points are used.
+ |      **kwargs
+ |          Additional keyword arguments are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      matplotlib.axes.Axes or numpy.ndarray of them
+ |
+ |      See Also
+ |      --------
+ |      scipy.stats.gaussian\_kde : Representation of a kernel-density
+ |          estimate using Gaussian kernels. This is the function used
+ |          internally to estimate the PDF.
+ |
+ |      Examples
+ |      --------
+ |      Given a Series of points randomly sampled from an unknown
+ |      distribution, estimate its PDF using KDE with automatic
+ |      bandwidth determination and plot the results, evaluating them at
+ |      1000 equally spaced points (default):
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> s = pd.Series([1, 2, 2.5, 3, 3.5, 4, 5])
+ |          >>> ax = s.plot.kde()
+ |
+ |      A scalar bandwidth can be specified. Using a small bandwidth value can
+ |      lead to over-fitting, while using a large bandwidth value may result
+ |      in under-fitting:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = s.plot.kde(bw\_method=0.3)
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = s.plot.kde(bw\_method=3)
+ |
+ |      Finally, the `ind` parameter determines the evaluation points for the
+ |      plot of the estimated PDF:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = s.plot.kde(ind=[1, 2, 3, 4, 5])
+ |
+ |      For DataFrame, it works in the same way:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> df = pd.DataFrame(\{
+ |          {\ldots}     'x': [1, 2, 2.5, 3, 3.5, 4, 5],
+ |          {\ldots}     'y': [4, 4, 4.5, 5, 5.5, 6, 6],
+ |          {\ldots} \})
+ |          >>> ax = df.plot.kde()
+ |
+ |      A scalar bandwidth can be specified. Using a small bandwidth value can
+ |      lead to over-fitting, while using a large bandwidth value may result
+ |      in under-fitting:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = df.plot.kde(bw\_method=0.3)
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = df.plot.kde(bw\_method=3)
+ |
+ |      Finally, the `ind` parameter determines the evaluation points for the
+ |      plot of the estimated PDF:
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax = df.plot.kde(ind=[1, 2, 3, 4, 5, 6])
+ |
+ |  line(self, x=None, y=None, **kwargs) -> 'PlotAccessor'
+ |      Plot Series or DataFrame as lines.
+ |
+ |      This function is useful to plot lines using DataFrame's values
+ |      as coordinates.
+ |
+ |      Parameters
+ |      ----------
+ |      x : label or position, optional
+ |          Allows plotting of one column versus another. If not specified,
+ |          the index of the DataFrame is used.
+ |      y : label or position, optional
+ |          Allows plotting of one column versus another. If not specified,
+ |          all numerical columns are used.
+ |      color : str, array-like, or dict, optional
+ |          The color for each of the DataFrame's columns. Possible values are:
+ |
+ |          - A single color string referred to by name, RGB or RGBA code,
+ |              for instance 'red' or '\#a98d19'.
+ |
+ |          - A sequence of color strings referred to by name, RGB or RGBA
+ |              code, which will be used for each column recursively. For
+ |              instance ['green','yellow'] each column's line will be filled in
+ |              green or yellow, alternatively. If there is only a single column
+to
+ |              be plotted, then only the first color from the color list will
+be
+ |              used.
+ |
+ |          - A dict of the form \{column name : color\}, so that each column will
+be
+ |              colored accordingly. For example, if your columns are called `a`
+and
+ |              `b`, then passing \{'a': 'green', 'b': 'red'\} will color lines
+for
+ |              column `a` in green and lines for column `b` in red.
+ |
+ |          .. versionadded:: 1.1.0
+ |
+ |      **kwargs
+ |          Additional keyword arguments are documented in
+ |          :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      matplotlib.axes.Axes or np.ndarray of them
+ |          An ndarray is returned with one :class:`matplotlib.axes.Axes`
+ |          per column when ``subplots=True``.
+ |
+ |              See Also
+ |              --------
+ |              matplotlib.pyplot.plot : Plot y versus x as lines and/or
+markers.
+ |
+ |              Examples
+ |              --------
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  >>> s = pd.Series([1, 3, 2])
+ |                  >>> s.plot.line()
+ |                  <AxesSubplot: ylabel='Density'>
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  The following example shows the populations for some animals
+ |                  over the years.
+ |
+ |                  >>> df = pd.DataFrame(\{
+ |                  {\ldots}    'pig': [20, 18, 489, 675, 1776],
+ |                  {\ldots}    'horse': [4, 25, 281, 600, 1900]
+ |                  {\ldots}    \}, index=[1990, 1997, 2003, 2009, 2014])
+ |                  >>> lines = df.plot.line()
+ |
+ |              .. plot::
+ |                 :context: close-figs
+ |
+ |                 An example with subplots, so an array of axes is returned.
+ |
+ |                 >>> axes = df.plot.line(subplots=True)
+ |                 >>> type(axes)
+ |                 <class 'numpy.ndarray'>
+ |
+ |              .. plot::
+ |                 :context: close-figs
+ |
+ |                 Let's repeat the same example, but specifying colors for
+ |                 each column (in this case, for each animal).
+ |
+ |                 >>> axes = df.plot.line(
+ |                 {\ldots}     subplots=True, color=\{"pig": "pink", "horse":
+"\#742802"\}
+ |                 {\ldots} )
+ |
+ |              .. plot::
+ |                  :context: close-figs
+ |
+ |                  The following example shows the relationship between both
+ |                  populations.
+ |
+ |                  >>> lines = df.plot.line(x='pig', y='horse')
+ |
+ |  pie(self, **kwargs) -> 'PlotAccessor'
+ |      Generate a pie plot.
+ |
+ |      A pie plot is a proportional representation of the numerical data in a
+ |      column. This function wraps :meth:`matplotlib.pyplot.pie` for the
+ |      specified column. If no column reference is passed and
+ |      ``subplots=True`` a pie plot is drawn for each numerical column
+ |      independently.
+ |
+ |      Parameters
+ |      ----------
+ |      y : int or label, optional
+ |          Label or position of the column to plot.
+ |          If not provided, ``subplots=True`` argument must be passed.
+ |      **kwargs
+ |          Keyword arguments to pass on to :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      matplotlib.axes.Axes or np.ndarray of them
+ |          A NumPy array is returned when `subplots` is True.
+ |
+ |      See Also
+ |      --------
+ |      Series.plot.pie : Generate a pie plot for a Series.
+ |      DataFrame.plot : Make plots of a DataFrame.
+ |
+ |      Examples
+ |      --------
+ |      In the example below we have a DataFrame with the information about
+ |      planet's mass and radius. We pass the 'mass' column to the
+ |      pie function to get a pie plot.
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> df = pd.DataFrame(\{'mass': [0.330, 4.87 , 5.97],
+ |          {\ldots}                    'radius': [2439.7, 6051.8, 6378.1]\},
+ |          {\ldots}                   index=['Mercury', 'Venus', 'Earth'])
+ |          >>> plot = df.plot.pie(y='mass', figsize=(5, 5))
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> plot = df.plot.pie(subplots=True, figsize=(11, 6))
+ |
+ |  scatter(self, x, y, s=None, c=None, **kwargs) -> 'PlotAccessor'
+ |      Create a scatter plot with varying marker point size and color.
+ |
+ |      The coordinates of each point are defined by two dataframe columns and
+ |      filled circles are used to represent each point. This kind of plot is
+ |      useful to see complex correlations between two variables. Points could
+ |      be for instance natural 2D coordinates like longitude and latitude in
+ |      a map or, in general, any pair of metrics that can be plotted against
+ |      each other.
+ |
+ |      Parameters
+ |      ----------
+ |      x : int or str
+ |          The column name or column position to be used as horizontal
+ |          coordinates for each point.
+ |      y : int or str
+ |          The column name or column position to be used as vertical
+ |          coordinates for each point.
+ |      s : str, scalar or array-like, optional
+ |          The size of each point. Possible values are:
+ |
+ |          - A string with the name of the column to be used for marker's size.
+ |
+ |          - A single scalar so all points have the same size.
+ |
+ |          - A sequence of scalars, which will be used for each point's size
+ |            recursively. For instance, when passing [2,14] all points size
+ |            will be either 2 or 14, alternatively.
+ |
+ |            .. versionchanged:: 1.1.0
+ |
+ |      c : str, int or array-like, optional
+ |          The color of each point. Possible values are:
+ |
+ |          - A single color string referred to by name, RGB or RGBA code,
+ |            for instance 'red' or '\#a98d19'.
+ |
+ |          - A sequence of color strings referred to by name, RGB or RGBA
+ |            code, which will be used for each point's color recursively. For
+ |            instance ['green','yellow'] all points will be filled in green or
+ |            yellow, alternatively.
+ |
+ |          - A column name or position whose values will be used to color the
+ |            marker points according to a colormap.
+ |
+ |      **kwargs
+ |          Keyword arguments to pass on to :meth:`DataFrame.plot`.
+ |
+ |      Returns
+ |      -------
+ |      :class:`matplotlib.axes.Axes` or numpy.ndarray of them
+ |
+ |      See Also
+ |      --------
+ |      matplotlib.pyplot.scatter : Scatter plot using multiple input data
+ |          formats.
+ |
+ |      Examples
+ |      --------
+ |      Let's see how to draw a scatter plot using coordinates from the values
+ |      in a DataFrame's columns.
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> df = pd.DataFrame([[5.1, 3.5, 0], [4.9, 3.0, 0], [7.0, 3.2, 1],
+ |          {\ldots}                    [6.4, 3.2, 1], [5.9, 3.0, 2]],
+ |          {\ldots}                   columns=['length', 'width', 'species'])
+ |          >>> ax1 = df.plot.scatter(x='length',
+ |          {\ldots}                       y='width',
+ |          {\ldots}                       c='DarkBlue')
+ |
+ |      And now with the color determined by a column as well.
+ |
+ |      .. plot::
+ |          :context: close-figs
+ |
+ |          >>> ax2 = df.plot.scatter(x='length',
+ |          {\ldots}                       y='width',
+ |          {\ldots}                       c='species',
+ |          {\ldots}                       colormap='viridis')
+ |
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes defined here:
+ |
+ |  \_\_annotations\_\_ = \{\}
+ |
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from pandas.core.base.PandasObject:
+ |
+ |  \_\_repr\_\_(self) -> 'str'
+ |      Return a string representation for a particular object.
+ |
+ |  \_\_sizeof\_\_(self) -> 'int'
+ |      Generates the total memory usage for an object that returns
+ |      either a value or Series of values
+ |
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from pandas.core.accessor.DirNamesMixin:
+ |
+ |  \_\_dir\_\_(self) -> 'list[str]'
+ |      Provide method name lookup and completion.
+ |
+ |      Notes
+ |      -----
+ |      Only provide 'public' methods.
+ |
+ |  ----------------------------------------------------------------------
+ |  Data descriptors inherited from pandas.core.accessor.DirNamesMixin:
+ |
+ |  \_\_dict\_\_
+ |      dictionary for instance variables (if defined)
+ |
+ |  \_\_weakref\_\_
+ |      list of weak references to the object (if defined)
+
+    \end{Verbatim}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
